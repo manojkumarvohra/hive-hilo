@@ -1,7 +1,3 @@
-/**************************
-*@Author: Manoj Kumar Vohra
-*@Created: 16-02-2016
-**************************/
 package com.bigdata.hive.udf;
 
 import java.io.IOException;
@@ -18,6 +14,7 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
+import org.apache.log4j.Logger;
 
 import com.bigdata.curator.Incrementer;
 
@@ -25,8 +22,9 @@ import com.bigdata.curator.Incrementer;
 public class SequenceGenerator extends GenericUDF {
 
 	private static String zookeeperAddress = null;
-	private static Map<String, SequenceState> sequenceStateMap = new HashMap<String, SequenceState>();
-
+	private Map<String, SequenceState> sequenceStateMap = new HashMap<String, SequenceState>();
+	private Logger logger = Logger.getLogger(this.getClass());
+	
 	@Override
 	public ObjectInspector initialize(ObjectInspector[] arguments) throws UDFArgumentException {
 
@@ -68,7 +66,7 @@ public class SequenceGenerator extends GenericUDF {
 		Object sequenceName = arguments[0].get();
 
 		if (sequenceName == null) {
-			throw new UDFArgumentException("sequencename cannot be null");
+			throw new UDFArgumentException("oops! sequencename cannot be null");
 		}
 
 		String sequenceNamePath = PrimitiveObjectInspectorFactory.javaStringObjectInspector
@@ -79,6 +77,7 @@ public class SequenceGenerator extends GenericUDF {
 		try {
 
 			if (sequenceState == null) {
+				logger.info("no sequence state found for: " + sequenceNamePath);
 				Incrementer incrementer = new Incrementer(zookeeperAddress, "/" + sequenceNamePath);
 				sequenceState = new SequenceState();
 				sequenceState.setIncrementer(incrementer);
@@ -94,7 +93,7 @@ public class SequenceGenerator extends GenericUDF {
 				sequenceState.resetCounters();
 				return sequenceState.getCounter();
 			}
-
+			
 			sequenceState.incrementCounter();
 
 		} catch (Exception e) {
@@ -113,7 +112,7 @@ public class SequenceGenerator extends GenericUDF {
 		for (String sequenceName : sequenceStateMap.keySet()) {
 			SequenceState sequenceState = sequenceStateMap.get(sequenceName);
 			if (sequenceState != null) {
-				sequenceState.getIncrementer().removeCounter();
+				sequenceState.getIncrementer().removeSequenceCounters();
 			}
 		}
 
