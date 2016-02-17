@@ -32,15 +32,15 @@ public class SequenceGeneratorTest {
 		int loopCounter = 0;
 		List<Long> counters = new ArrayList<Long>();
 		List<Long> expected = new ArrayList<Long>();
-		Long counter=1L;
-		while (loopCounter < 100) {
+		Long counter=0L;
+		while (loopCounter < 200) {
 			counters.add((Long) sequenceGenerator.evaluate(arguments));
 			expected.add(counter);
 			counter++;
 			loopCounter++;
 		}
 		
-		assertThat(counters.size(), is(100));
+		assertThat(counters.size(), is(200));
 		assertTrue(expected.containsAll(counters));
 	}
 
