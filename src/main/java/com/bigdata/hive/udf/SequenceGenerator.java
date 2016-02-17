@@ -92,6 +92,7 @@ public class SequenceGenerator extends GenericUDF {
 
 			if (sequenceState.getCounter() == null || sequenceState.getCounter() > sequenceState.getEndValue()) {
 				sequenceState.resetCounters();
+				return sequenceState.getCounter();
 			}
 
 			sequenceState.incrementCounter();
