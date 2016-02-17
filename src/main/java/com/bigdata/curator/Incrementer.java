@@ -1,13 +1,12 @@
-/**************************
-*@Author: Manoj Kumar Vohra
-*@Created: 16-02-2016
-**************************/
 package com.bigdata.curator;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.atomic.AtomicValue;
 import org.apache.curator.framework.recipes.atomic.DistributedAtomicLong;
+import org.apache.curator.framework.recipes.atomic.PromotedToLock;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.log4j.Logger;
@@ -31,8 +30,17 @@ public class Incrementer {
 		int intervaloEntreTentativasMilissegundos = 100;
 		RetryPolicy rp = new RetryUntilElapsed(tempoMaximoDeTentativasMilissegundos,
 				intervaloEntreTentativasMilissegundos);
-		this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp);
-		this.jvmCounter.initialize((long) -1);
+		 RetryPolicy lockPromotionRetryPolicy=new ExponentialBackoffRetry(3,3);
+		 PromotedToLock promotedToLock=PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy).build();
+		    
+		
+		if (notInitialised()) {
+			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
+			this.jvmCounter.initialize((long) -1);
+		}
+		else{
+			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
+		}
 	}
 
 	public Long increment() throws Exception {
@@ -41,8 +49,10 @@ public class Incrementer {
 
 			if (this.jvmCounter.get().succeeded()) {
 
-				if (this.jvmCounter.increment().succeeded()) {
-					currentCounter = this.jvmCounter.get().postValue();
+				AtomicValue<Long> incrementState = this.jvmCounter.increment();
+				
+				if (incrementState.succeeded()) {
+					currentCounter = incrementState.postValue();
 				}
 			}
 
@@ -53,7 +63,17 @@ public class Incrementer {
 		return currentCounter;
 	}
 
-	public void removeCounter() {
+	public boolean notInitialised() throws Exception {
+		try {
+				return curator.checkExists().forPath(this.counterPath) == null;
+
+		} catch (Exception ex) {
+			logger.error("********* Error in fetching counter details: " + ex.getMessage());
+			throw new RuntimeException("Error in fetching counter details: " + ex.getMessage());
+		}
+	}
+
+	public void removeSequenceCounters() {
 
 		try {
 			curator.delete().forPath(this.counterPath);
