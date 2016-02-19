@@ -18,7 +18,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>com.bigdata.hive.udf.SequenceGenerator</mainClass>
+							<mainClass>com.bigdata.hive.udf.HLSequenceGenerator_v01</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
