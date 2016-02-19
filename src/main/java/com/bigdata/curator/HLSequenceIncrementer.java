@@ -1,7 +1,3 @@
-/**************************
-*@Author: Manoj Kumar Vohra
-*@Created: 16-02-2016
-**************************/
 package com.bigdata.curator;
 
 import org.apache.curator.RetryPolicy;
@@ -15,34 +11,35 @@ import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.log4j.Logger;
 
-public class Incrementer {
+public class HLSequenceIncrementer {
 
 	private CuratorFramework curator;
 	private String counterPath;
 	private DistributedAtomicLong jvmCounter;
 	private Logger logger = Logger.getLogger(this.getClass());
 
-	public Incrementer(String zkAddress, String counterPath) throws Exception {
+	public HLSequenceIncrementer(String zkAddress, String counterPath, Long startHIValue) throws Exception {
 		this.curator = CuratorFrameworkFactory.newClient(zkAddress, new RetryNTimes(5, 1000));
 		curator.start();
 		this.counterPath = counterPath;
-		createCounter();
+		createCounter(startHIValue);
 	}
 
-	private void createCounter() throws Exception {
+	private void createCounter(Long startHIValue) throws Exception {
 		int tempoMaximoDeTentativasMilissegundos = 1000;
 		int intervaloEntreTentativasMilissegundos = 100;
 		RetryPolicy rp = new RetryUntilElapsed(tempoMaximoDeTentativasMilissegundos,
 				intervaloEntreTentativasMilissegundos);
-		 RetryPolicy lockPromotionRetryPolicy=new ExponentialBackoffRetry(3,3);
-		 PromotedToLock promotedToLock=PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy).build();
-		    
-		
+		RetryPolicy lockPromotionRetryPolicy = new ExponentialBackoffRetry(3, 3);
+		PromotedToLock promotedToLock = PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy)
+				.build();
+
+		startHIValue = startHIValue != null ? startHIValue : -1;
+
 		if (notInitialised()) {
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
-			this.jvmCounter.initialize((long) -1);
-		}
-		else{
+			this.jvmCounter.initialize(startHIValue);
+		} else {
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
 		}
 	}
@@ -54,7 +51,7 @@ public class Incrementer {
 			if (this.jvmCounter.get().succeeded()) {
 
 				AtomicValue<Long> incrementState = this.jvmCounter.increment();
-				
+
 				if (incrementState.succeeded()) {
 					currentCounter = incrementState.postValue();
 				}
@@ -69,7 +66,7 @@ public class Incrementer {
 
 	public boolean notInitialised() throws Exception {
 		try {
-				return curator.checkExists().forPath(this.counterPath) == null;
+			return curator.checkExists().forPath(this.counterPath) == null;
 
 		} catch (Exception ex) {
 			logger.error("********* Error in fetching counter details: " + ex.getMessage());
