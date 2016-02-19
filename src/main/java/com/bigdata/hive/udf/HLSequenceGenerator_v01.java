@@ -44,22 +44,12 @@ public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGener
 		}
 
 		udfProperties = new Properties();
-		InputStream inputStream = null;
 
 		try {
-
 			udfProperties.load(HLSequenceGenerator_v01.class.getResourceAsStream("/UDFProperties.properties"));
 			zookeeperAddress = udfProperties.getProperty("zookeeperaddress");
 		} catch (IOException ex) {
 			throw new RuntimeException("Unable to load UDF properties." + ex.getMessage());
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 		return PrimitiveObjectInspectorFactory.javaLongObjectInspector;
