@@ -26,7 +26,9 @@ Usage
 - change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
 - make the package
 - add the jar-with-dependencies to hive
-- create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator_v01'    - set hive.plan.serialization.format=javaXML;
+- create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator_v01' 
+
+- set hive.plan.serialization.format=javaXML;
 - use the function in your select queries
     - Ex usage: select seq("modelIds") from models;
  
