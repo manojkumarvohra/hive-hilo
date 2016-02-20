@@ -14,7 +14,7 @@ High Level Design
     - for example: you can insert into final table from staging table and can use UDF there.
 - You can create multiple sequences by changing the sequence name argument while invoking the select. 
 - You can configure low values and seed values per sequence basis.
-- Seed value will only be used if sequence is being used for first time i.e. no zookeeper node exists for /<sequenceName>.
+- Seed value will only be used if sequence is being used for first time i.e. no zookeeper node exists for /sequenceName.
 - If seed value is not provided the sequence will start from 0 if fresh or on the basis of last HI value if already used.
 - If LO value is not provided the sequence will use default value of 200.
 
@@ -26,7 +26,7 @@ Usage
 - change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
 - make the package
 - add the jar-with-dependencies to hive
-- create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator_v01'    -set hive.plan.serialization.format=javaXML;
+- create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator_v01'    - set hive.plan.serialization.format=javaXML;
 - use the function in your select queries
     - Ex usage: select seq("modelIds") from models;
  
