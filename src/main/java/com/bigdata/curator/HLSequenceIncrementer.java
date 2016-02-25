@@ -26,10 +26,9 @@ public class HLSequenceIncrementer {
 	}
 
 	private void createCounter(Long startHIValue) throws Exception {
-		int tempoMaximoDeTentativasMilissegundos = 1000;
-		int intervaloEntreTentativasMilissegundos = 100;
-		RetryPolicy rp = new RetryUntilElapsed(tempoMaximoDeTentativasMilissegundos,
-				intervaloEntreTentativasMilissegundos);
+		int maxRetryTimeInMillis = 1000;
+		int retryIntervalInMillis = 100;
+		RetryPolicy rp = new RetryUntilElapsed(maxRetryTimeInMillis,retryIntervalInMillis);
 		RetryPolicy lockPromotionRetryPolicy = new ExponentialBackoffRetry(3, 3);
 		PromotedToLock promotedToLock = PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy)
 				.build();
