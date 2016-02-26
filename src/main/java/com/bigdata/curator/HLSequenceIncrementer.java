@@ -43,8 +43,11 @@ public class HLSequenceIncrementer {
 
 		if (notInitialised()) {
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
+			/* if the node /counterPath already exists, the below intialisation wouldn't make any difference.
+			For seed values its recommended to check zookeeper for non existence of the /counterPath*/
 			this.jvmCounter.initialize(startHIValue);
 		} else {
+			/*This will sync the atomic long with current existing value at /counterPath*/
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
 		}
 	}
