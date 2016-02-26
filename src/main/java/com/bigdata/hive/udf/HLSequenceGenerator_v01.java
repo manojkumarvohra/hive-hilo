@@ -72,7 +72,9 @@ public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGener
 
 		String sequenceNamePath = PrimitiveObjectInspectorFactory.javaStringObjectInspector
 				.getPrimitiveJavaObject(sequenceName);
-
+		
+		/*Incrementer creates a zookeeper node with / in starting, hence the input parameter can't have a / in its beginning.
+		if required nested paths can be used for sequence name so as to define your name space. like "myNameSpace/sequenceName"*/
 		if (sequenceNamePath.startsWith("/")) {
 			throw new UDFArgumentException("oops! sequencename can't start with /");
 		}
@@ -82,7 +84,9 @@ public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGener
 
 	@Override
 	public Long next(String sequenceNamePath) {
-
+		/*seed value and start HI value will only be initialised for first run of evaluate in the mapper.
+		For the subsequent runs the variables will remain null as sequence state would already have been 
+		initialised.*/
 		Long seedValue = null;
 		Long startHIValue = null;
 
@@ -111,7 +115,8 @@ public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGener
 		}
 
 		try {
-
+			/*If the sequence counter is still not used or if sequence is complete with its current allocated batch,
+			get the next HI value from zookeeper and start the counter with new batch bounds*/
 			if (sequenceState.getCounter() == null || sequenceState.getCounter() >= sequenceState.getEndValue()) {
 				sequenceState.resetCounters(seedValue, startHIValue);
 				return sequenceState.getCounter();
@@ -126,7 +131,8 @@ public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGener
 		return sequenceState.getCounter();
 
 	}
-
+	
+	/*Only used in test at the moment*/
 	public void destroy() {
 		if (sequenceState != null) {
 			sequenceState.getIncrementer().removeSequenceCounters();
