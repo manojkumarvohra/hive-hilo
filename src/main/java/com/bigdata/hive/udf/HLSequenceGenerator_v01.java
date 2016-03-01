@@ -18,9 +18,12 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
+import org.apache.hive.com.esotericsoftware.kryo.DefaultSerializer;
+import org.apache.hive.com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 import com.bigdata.curator.HLSequenceIncrementer;
 
+@DefaultSerializer(value = FieldSerializer.class)
 @UDFType(deterministic = false, stateful = true)
 public class HLSequenceGenerator_v01 extends GenericUDF implements SequenceGenerator {
 
