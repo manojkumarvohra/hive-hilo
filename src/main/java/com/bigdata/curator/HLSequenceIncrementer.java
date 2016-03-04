@@ -22,7 +22,7 @@ public class HLSequenceIncrementer {
 	private CuratorFramework curator;
 	private String counterPath;
 	private DistributedAtomicLong jvmCounter;
-	private Logger logger = Logger.getLogger(this.getClass());
+	private transient Logger logger = Logger.getLogger(this.getClass());
 
 	public HLSequenceIncrementer(String zkAddress, String counterPath, Long startHIValue) throws Exception {
 		this.curator = CuratorFrameworkFactory.newClient(zkAddress, new RetryNTimes(5, 1000));
