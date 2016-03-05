@@ -7,7 +7,6 @@
 package com.bigdata.hive.udf;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
