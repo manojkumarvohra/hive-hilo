@@ -10,7 +10,7 @@ High Level Design
 - The HI value is incremented & fetched for every n LO (default 200) iterations.
 - The UDF supports a single String argument which is the sequence name used to maintain zNodes in zookeeper.
 	- The sequence name can't start with /
-	- The sequence name can be like a nested structure like <directoryName>/<subdirectoies>/sequenceName
+	- The sequence name can be like a nested structure like "[directoryName]/[subdirectoies]/sequenceName"
     - No need to create any znode manually prior to this, UDF will do it itself
 - Sequence function can only be used in select queries, which can be nested as sub-select inside Insert queries.
     - for example: you can insert into final table from staging table and can use UDF there.
