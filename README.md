@@ -31,7 +31,6 @@ Usage
 - create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator_v01'
 - If your select query involves join set auto conversion to map side joins to false. 
 	- set hive.auto.convert.join=false;
-	- set hive.cache.expr.evaluation = false;
 - use the function in your select queries
     - Ex usage: select seq("modelIds") from models;
  

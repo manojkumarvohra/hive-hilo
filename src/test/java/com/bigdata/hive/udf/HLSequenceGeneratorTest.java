@@ -3,6 +3,7 @@ package com.bigdata.hive.udf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +13,23 @@ import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF.DeferredObject;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.junit.After;
 import org.junit.Test;
 
 public class HLSequenceGeneratorTest {
 
-	HLSequenceGenerator_v01 sequenceGeneratorForJVM1 = new HLSequenceGenerator_v01();
-	HLSequenceGenerator_v01 sequenceGeneratorForJVM2 = new HLSequenceGenerator_v01();
+	HLSequenceGenerator sequenceGeneratorForJVM1 = new HLSequenceGenerator();
+	HLSequenceGenerator sequenceGeneratorForJVM2 = new HLSequenceGenerator();
 	
 	@Test
 	public void shouldGenerateSequences() throws HiveException, InterruptedException {
 
-		ObjectInspector[] objectInspector = new ObjectInspector[1];
+		ObjectInspector[] objectInspector = new ObjectInspector[3];
 		objectInspector[0] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
+		objectInspector[1] = PrimitiveObjectInspectorFactory.javaIntObjectInspector;
+		objectInspector[2] = PrimitiveObjectInspectorFactory.javaLongObjectInspector;
 		sequenceGeneratorForJVM1.initialize(objectInspector);
 		sequenceGeneratorForJVM2.initialize(objectInspector);
 		
@@ -54,30 +59,61 @@ public class HLSequenceGeneratorTest {
 		sequenceGeneratorForJVM2.close();
 	}
 
-	static class DeferredArgument implements DeferredObject {
+	static class DeferredStringArgument implements DeferredObject {
 
-		private String sequenceName = null;
+		private String sArgument = null;
 
-		public DeferredArgument(String sequenceName) {
-			this.sequenceName = sequenceName;
+		public DeferredStringArgument(String sequenceName) {
+			this.sArgument = sequenceName;
 		}
 
 		public void prepare(int version) throws HiveException {
 		}
 
 		public Object get() throws HiveException {
-			return sequenceName;
+			return sArgument;
+		}
+	}
+	
+	static class DeferredIntArgument implements DeferredObject {
+
+		private IntWritable iArgument = null;
+
+		public DeferredIntArgument(IntWritable iArgument) {
+			this.iArgument = iArgument;
 		}
 
+		public void prepare(int version) throws HiveException {
+		}
+
+		public Object get() throws HiveException {
+			return iArgument;
+		}
+	}
+	
+	static class DeferredLongArgument implements DeferredObject {
+
+		private LongWritable lArgument = null;
+
+		public DeferredLongArgument(LongWritable lArgument) {
+			this.lArgument = lArgument;
+		}
+
+		public void prepare(int version) throws HiveException {
+		}
+
+		public Object get() throws HiveException {
+			return lArgument;
+		}
 	}
 
 	static class Evaluation implements Runnable {
 
-		HLSequenceGenerator_v01 sequenceGenerator = null;
+		HLSequenceGenerator sequenceGenerator = null;
 		List<Long> counters = null;
 		CountDownLatch countDownLatch = null;
 
-		public Evaluation(HLSequenceGenerator_v01 sequenceGenerator, List<Long> counters,
+		public Evaluation(HLSequenceGenerator sequenceGenerator, List<Long> counters,
 				CountDownLatch countDownLatch) {
 			this.sequenceGenerator = sequenceGenerator;
 			this.counters = counters;
@@ -91,8 +127,10 @@ public class HLSequenceGeneratorTest {
 			} catch (InterruptedException e1) {
 			}
 
-			DeferredObject[] arguments = new DeferredObject[1];
-			arguments[0] = new DeferredArgument("testcheckseq");
+			DeferredObject[] arguments = new DeferredObject[3];
+			arguments[0] = new DeferredStringArgument("testSpeedCheckSequence");
+			arguments[1] = new DeferredIntArgument(new IntWritable(500));
+			arguments[2] = new DeferredLongArgument(new LongWritable(327L));
 
 			int loopCounter = 0;
 			while (loopCounter < 202) {

@@ -1,9 +1,3 @@
-/*
-*
-*@Author: Manoj Kumar Vohra
-*@Created: 16-02-2016
-*
-*/
 package com.bigdata.curator;
 
 import org.apache.curator.RetryPolicy;
@@ -32,9 +26,10 @@ public class HLSequenceIncrementer {
 	}
 
 	private void createCounter(Long startHIValue) throws Exception {
-		int maxRetryTimeInMillis = 1000;
-		int retryIntervalInMillis = 100;
-		RetryPolicy rp = new RetryUntilElapsed(maxRetryTimeInMillis,retryIntervalInMillis);
+		int maximumRetryTimeInMillis = 1000;
+		int retryFrequencyInMillis = 100;
+		RetryPolicy rp = new RetryUntilElapsed(maximumRetryTimeInMillis,
+				retryFrequencyInMillis);
 		RetryPolicy lockPromotionRetryPolicy = new ExponentialBackoffRetry(3, 3);
 		PromotedToLock promotedToLock = PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy)
 				.build();
@@ -43,11 +38,8 @@ public class HLSequenceIncrementer {
 
 		if (notInitialised()) {
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
-			/* if the node /counterPath already exists, the below intialisation wouldn't make any difference.
-			For seed values its recommended to check zookeeper for non existence of the /counterPath*/
 			this.jvmCounter.initialize(startHIValue);
 		} else {
-			/*This will sync the atomic long with current existing value at /counterPath*/
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
 		}
 	}

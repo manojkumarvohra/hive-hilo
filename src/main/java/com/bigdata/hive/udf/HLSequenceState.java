@@ -1,9 +1,3 @@
-/*
-*
-*@Author: Manoj Kumar Vohra
-*@Created: 16-02-2016
-*
-*/
 package com.bigdata.hive.udf;
 
 import com.bigdata.curator.HLSequenceIncrementer;
@@ -28,7 +22,6 @@ public class HLSequenceState implements SequenceState {
 	 * keeper would have moved ahead.
 	 */
 	private void initCounter(Long seedValue, Long startHIValue) {
-
 		if (seedValue != null && startHIValue != null && hiValue.equals(startHIValue + 1)) {
 			counter = seedValue;
 		} else {
