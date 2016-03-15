@@ -16,6 +16,8 @@ High Level Design
     - for example: you can insert into final table from staging table and can use UDF there.
 - You can create multiple sequences by changing the sequence name argument while invoking the select. 
 - You can configure low values and seed values per sequence basis.
+- 	- You can configure these permanently in UDF properties file.
+- 	- OR you can pass these as arguments while invoking function.
 - Seed value will only be used if sequence is being used for first time i.e. no zookeeper node exists for sequence path.
 - If seed value is not provided the sequence will start from 0 if fresh or on the basis of last HI value if already used.
 - If LO value is not provided the sequence will use default value of 200.
@@ -23,6 +25,7 @@ High Level Design
 -----
 Usage
 -----
+*FunctionName(<String> sequenceName, <int> lowvalue[optional, <long> seedvalue[optional])*
 
 - checkout the repository
 - change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
@@ -32,7 +35,7 @@ Usage
 - If your select query involves join set auto conversion to map side joins to false. 
 	- set hive.auto.convert.join=false;
 - use the function in your select queries
-    - Ex usage: select seq("modelIds") from models;
+    - Ex usage: select seq("modelIds", 300, 327L) from models;
  
 ----------
 Trade Offs
