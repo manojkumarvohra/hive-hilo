@@ -25,7 +25,7 @@ High Level Design
 -----
 Usage
 -----
-*FunctionName(<String> sequenceName, <int> lowvalue[optional, <long> seedvalue[optional])*
+*FunctionName(<String> sequenceName, <int> lowvalue[optional], <long> seedvalue[optional])*
 
 - checkout the repository
 - change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
