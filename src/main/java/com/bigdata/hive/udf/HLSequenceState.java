@@ -2,6 +2,7 @@ package com.bigdata.hive.udf;
 
 import com.bigdata.curator.HLSequenceIncrementer;
 
+
 public class HLSequenceState implements SequenceState {
 
 	private Long counter = null;

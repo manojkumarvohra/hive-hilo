@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>cablevision-common</groupId>
-  <artifactId>speedcheck-sequence</artifactId>
-  <version>0.0.3</version>
-  <build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cablevision-common</groupId>
+	<artifactId>speedcheck-sequence</artifactId>
+	<version>0.0.3</version>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -13,7 +14,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>com.bigdata.hive.udf.SequenceGeneratorUDF</mainClass>
+							<mainClass>com.bigdata.hive.udf.HLSequenceGenerator</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -74,6 +75,11 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.10.19</version>
 		</dependency>
 	</dependencies>
 </project>
