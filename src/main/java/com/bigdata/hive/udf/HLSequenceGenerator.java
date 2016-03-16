@@ -104,11 +104,15 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 			}
 		}
 
-		return next(sequenceNameParam, lowValueParam, seedValueParam);
+		return next();
 	}
 
 	@Override
-	public Long next(String sequenceNamePath, Integer iLowValue, Long lSeedValue) {
+	public Long next() {
+		return hlNextImpl(sequenceNameParam, lowValueParam, seedValueParam);
+	}
+	
+	public Long hlNextImpl(String sequenceNamePath, Integer iLowValue, Long lSeedValue) {
 
 		Long seedValue = lSeedValue;
 		Integer seqLowValue = iLowValue;
