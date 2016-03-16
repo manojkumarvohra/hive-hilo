@@ -2,13 +2,12 @@ package com.bigdata.hive.udf;
 
 import com.bigdata.curator.HLSequenceIncrementer;
 
-
 public class HLSequenceState implements SequenceState {
 
 	private Long counter = null;
-	private HLSequenceIncrementer incrementer = null;
 	private Long hiValue = null;
 	private Integer loValue = null;
+	private HLSequenceIncrementer incrementer = null;
 
 	public void resetCounters(Long seedValue, Long startHIValue) throws Exception {
 		hiValue = incrementer.increment();

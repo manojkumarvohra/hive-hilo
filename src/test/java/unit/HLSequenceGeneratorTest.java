@@ -61,7 +61,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfSequenceNameIsNull() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("oops! sequencename cannot be null");
+		expectedException.expectMessage("sequencename cannot be null");
 
 		DeferredObject[] arguments = new DeferredObject[1];
 		arguments[0] = new DeferredArgument<String>(null);
@@ -83,7 +83,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfSequenceNameStartsWithSlash() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("oops! sequencename can't start with /");
+		expectedException.expectMessage("sequencename can't start with /");
 
 		DeferredObject[] arguments = new DeferredObject[1];
 		arguments[0] = new DeferredArgument<String>("/InvalidSequence");
@@ -95,7 +95,7 @@ public class HLSequenceGeneratorTest {
 	public void shouldThrowExceptionIfLowValueIsNull() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
 
-		expectedException.expectMessage("oops! low value cannot be null");
+		expectedException.expectMessage("Low value cannot be null");
 		DeferredObject[] arguments = new DeferredObject[2];
 		arguments[0] = new DeferredArgument<String>("validSequence");
 		arguments[1] = new DeferredArgument<IntWritable>(null);
@@ -106,7 +106,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfLowValueIsNotInt() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("low value argument must be an integer");
+		expectedException.expectMessage("Low value argument must be an integer");
 
 		ObjectInspector[] objectInspector = new ObjectInspector[2];
 		objectInspector[0] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
@@ -118,7 +118,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfLowValueIs0() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("oops! low value should be greater than 0");
+		expectedException.expectMessage("Low value should be greater than 0");
 
 		DeferredObject[] arguments = new DeferredObject[2];
 		arguments[0] = new DeferredArgument<String>("validSequence");
@@ -130,7 +130,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfLowValueIsLessThan0() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("oops! low value should be greater than 0");
+		expectedException.expectMessage("Low value should be greater than 0");
 
 		DeferredObject[] arguments = new DeferredObject[2];
 		arguments[0] = new DeferredArgument<String>("validSequence");
@@ -143,7 +143,7 @@ public class HLSequenceGeneratorTest {
 	public void shouldThrowExceptionIfSeedValueIsNull() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
 
-		expectedException.expectMessage("oops! seed value cannot be null");
+		expectedException.expectMessage("Seed value cannot be null");
 		DeferredObject[] arguments = new DeferredObject[3];
 		arguments[0] = new DeferredArgument<String>("validSequence");
 		arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(1));
@@ -155,7 +155,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfSeedValueIsNotInt() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("seed value argument must be a long");
+		expectedException.expectMessage("Seed value argument must be a long");
 
 		ObjectInspector[] objectInspector = new ObjectInspector[3];
 		objectInspector[0] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
@@ -168,7 +168,7 @@ public class HLSequenceGeneratorTest {
 	@Test
 	public void shouldThrowExceptionIfSeedValueIsLessThan0() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
-		expectedException.expectMessage("oops! seed value can't be negative");
+		expectedException.expectMessage("Seed value can't be negative");
 
 		DeferredObject[] arguments = new DeferredObject[3];
 		arguments[0] = new DeferredArgument<String>("validSequence");

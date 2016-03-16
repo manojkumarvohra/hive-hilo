@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 public class HLSequenceIncrementer {
 
-	private CuratorFramework curator;
 	private String counterPath;
+	private CuratorFramework curator;
 	private DistributedAtomicLong jvmCounter;
 	private transient Logger logger = Logger.getLogger(this.getClass());
 

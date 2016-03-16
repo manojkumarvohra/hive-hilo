@@ -14,16 +14,18 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.IntObjectInspecto
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.LongObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
+import org.apache.log4j.Logger;
 
 import com.bigdata.curator.HLSequenceIncrementer;
 
 @UDFType(deterministic = false, stateful = true)
 public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator {
 
-	private static final String ZK_SEQUENCE_ROOT = "/sequences/hl/";
 	private static final String LOW_SUFFIX = ".low";
 	private static final String SEED_SUFFIX = ".seed";
 	private static final int DEFAULT_LOW_VALUE = 200;
+
+	private static String zooKeeperSequenceRoot = null;
 	private static String zookeeperAddress = null;
 	private static Properties udfProperties = null;
 	private HLSequenceState sequenceState = null;
@@ -31,6 +33,8 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 	private String sequenceNameParam = null;
 	private Integer lowValueParam = null;
 	private Long seedValueParam = null;
+
+	private transient Logger logger = Logger.getLogger(this.getClass());
 
 	@Override
 	public String getDisplayString(String[] children) {
@@ -68,14 +72,17 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		try {
 			udfProperties.load(HLSequenceGenerator.class.getResourceAsStream("/UDFProperties.properties"));
 			zookeeperAddress = udfProperties.getProperty("zookeeperaddress");
+			zooKeeperSequenceRoot = udfProperties.getProperty("zookeeper_sequence_root");
 		} catch (IOException ex) {
-			throw new RuntimeException("Unable to load UDF properties." + ex.getMessage());
+			String errorMessage = "Unable to load UDF properties." + ex.getMessage();
+			logger.error(errorMessage);
+			throw new RuntimeException(errorMessage);
 		} finally {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.warn("Unable to close properties stream." + e.getMessage());
 				}
 			}
 		}
@@ -111,7 +118,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 	public Long next() {
 		return hlNextImpl(sequenceNameParam, lowValueParam, seedValueParam);
 	}
-	
+
 	public Long hlNextImpl(String sequenceNamePath, Integer iLowValue, Long lSeedValue) {
 
 		Long seedValue = lSeedValue;
@@ -148,11 +155,13 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 					}
 
 					HLSequenceIncrementer incrementer = new HLSequenceIncrementer(zookeeperAddress,
-							ZK_SEQUENCE_ROOT + sequenceNamePath, startHIValue);
+							zooKeeperSequenceRoot + sequenceNamePath, startHIValue);
 					sequenceState.setIncrementer(incrementer);
 				}
 			} catch (Exception e) {
-				throw new RuntimeException("Error communicating with zookeeper: " + e.getMessage());
+				String errorMessage = "Error communicating with zookeeper: " + e.getMessage();
+				logger.error(errorMessage);
+				throw new RuntimeException(errorMessage);
 			}
 			evaluationStarted = true;
 		}
@@ -167,7 +176,9 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 			sequenceState.incrementCounter();
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error executing UDF: " + e.getMessage());
+			String errorMessage = "Error executing UDF: " + e.getMessage();
+			logger.error(errorMessage);
+			throw new RuntimeException(errorMessage);
 		}
 
 		return sequenceState.getCounter();
@@ -178,14 +189,14 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		Object sequenceName = arguments[0].get();
 
 		if (sequenceName == null) {
-			throw new UDFArgumentException("oops! sequencename cannot be null");
+			throw new UDFArgumentException("sequencename cannot be null");
 		}
 
 		String sequenceNamePath = PrimitiveObjectInspectorFactory.javaStringObjectInspector
 				.getPrimitiveJavaObject(sequenceName);
 
 		if (sequenceNamePath.startsWith("/")) {
-			throw new UDFArgumentException("oops! sequencename can't start with /");
+			throw new UDFArgumentException("sequencename can't start with /");
 		}
 
 		return sequenceNamePath;
@@ -195,12 +206,13 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		Object lowValue = arguments[1].get();
 
 		if (lowValue == null) {
-			throw new UDFArgumentException("oops! low value cannot be null");
+			throw new UDFArgumentException("Low value cannot be null");
 		}
 
-		Integer lowValueParam = (Integer) PrimitiveObjectInspectorFactory.writableIntObjectInspector.getPrimitiveJavaObject(lowValue);
+		Integer lowValueParam = (Integer) PrimitiveObjectInspectorFactory.writableIntObjectInspector
+				.getPrimitiveJavaObject(lowValue);
 		if (lowValueParam <= 0) {
-			throw new UDFArgumentException("oops! low value should be greater than 0");
+			throw new UDFArgumentException("Low value should be greater than 0");
 		}
 
 		return lowValueParam;
@@ -210,13 +222,14 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		Object seedValue = arguments[2].get();
 
 		if (seedValue == null) {
-			throw new UDFArgumentException("oops! seed value cannot be null");
+			throw new UDFArgumentException("Seed value cannot be null");
 		}
 
-		Long seedValueParam = (Long) PrimitiveObjectInspectorFactory.writableLongObjectInspector.getPrimitiveJavaObject(seedValue);
+		Long seedValueParam = (Long) PrimitiveObjectInspectorFactory.writableLongObjectInspector
+				.getPrimitiveJavaObject(seedValue);
 
 		if (seedValueParam < 0) {
-			throw new UDFArgumentException("oops! seed value can't be negative");
+			throw new UDFArgumentException("Seed value can't be negative");
 		}
 
 		return seedValueParam;
@@ -226,7 +239,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		ObjectInspector seedValueInspector = arguments[2];
 
 		if (!(seedValueInspector instanceof LongObjectInspector)) {
-			throw new UDFArgumentException("seed value argument must be a long");
+			throw new UDFArgumentException("Seed value argument must be a long");
 		}
 	}
 
@@ -234,7 +247,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		ObjectInspector lowValueInspector = arguments[1];
 
 		if (!(lowValueInspector instanceof IntObjectInspector)) {
-			throw new UDFArgumentException("low value argument must be an integer");
+			throw new UDFArgumentException("Low value argument must be an integer");
 		}
 	}
 
