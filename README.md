@@ -34,6 +34,12 @@ Usage
 - create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator'
 - If your select query involves join set auto conversion to map side joins to false. 
 	- set hive.auto.convert.join=false;
+- If you get error like: [java.lang.ClassCastException: org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryArray cannot be cast to [Ljava.lang.Object;]
+	- set hive.mapjoin.optimized.hashtable=false; 
+- If sequence outputs same value for each row, this could be a caching issue bug:
+    - set hive.cache.expr.evaluation = false
+        - If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
+            - select concat(seq_func("sequence_name"),'') , other part of query .......  
 - use the function in your select queries
     - Ex usage: select seq("modelIds", 300, 327L) from models;
  
