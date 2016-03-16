@@ -20,9 +20,7 @@ import org.junit.Test;
 
 import com.bigdata.hive.udf.HLSequenceGenerator;
 
-import models.DeferredIntArgument;
-import models.DeferredLongArgument;
-import models.DeferredStringArgument;
+import models.DeferredArgument;
 
 /*
  * NOTE: This integration test requires a valid zookeeper instance to be provided.
@@ -90,9 +88,9 @@ public class HLSequenceGeneratorIntegrationTest {
 			}
 
 			DeferredObject[] arguments = new DeferredObject[3];
-			arguments[0] = new DeferredStringArgument("testSpeedCheckSequence");
-			arguments[1] = new DeferredIntArgument(new IntWritable(500));
-			arguments[2] = new DeferredLongArgument(new LongWritable(327L));
+			arguments[0] = new DeferredArgument<String>("testSpeedCheckSequence");
+			arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(500));
+			arguments[2] = new DeferredArgument<LongWritable>(new LongWritable(327L));
 
 			int loopCounter = 0;
 			while (loopCounter < 202) {

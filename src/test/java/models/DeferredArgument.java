@@ -2,21 +2,22 @@ package models;
 
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF.DeferredObject;
-import org.apache.hadoop.io.LongWritable;
 
-public class DeferredLongArgument implements DeferredObject {
+public class DeferredArgument<T> implements DeferredObject {
+	
+	private T argument = null;
 
-	private LongWritable lArgument = null;
-
-	public DeferredLongArgument(LongWritable lArgument) {
-		this.lArgument = lArgument;
+	public DeferredArgument(T argument) {
+		this.argument = argument;
 	}
 
+	@Override
 	public void prepare(int version) throws HiveException {
 	}
 
+	@Override
 	public Object get() throws HiveException {
-		return lArgument;
+		return argument;
 	}
 
 }

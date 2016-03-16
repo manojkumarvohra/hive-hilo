@@ -18,9 +18,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.bigdata.hive.udf.HLSequenceGenerator;
 
-import models.DeferredIntArgument;
-import models.DeferredLongArgument;
-import models.DeferredStringArgument;
+import models.DeferredArgument;
 
 public class HLSequenceGeneratorTest {
 
@@ -66,7 +64,7 @@ public class HLSequenceGeneratorTest {
 		expectedException.expectMessage("oops! sequencename cannot be null");
 
 		DeferredObject[] arguments = new DeferredObject[1];
-		arguments[0] = new DeferredStringArgument(null);
+		arguments[0] = new DeferredArgument<String>(null);
 
 		sequenceGenerator.evaluate(arguments);
 	}
@@ -88,7 +86,7 @@ public class HLSequenceGeneratorTest {
 		expectedException.expectMessage("oops! sequencename can't start with /");
 
 		DeferredObject[] arguments = new DeferredObject[1];
-		arguments[0] = new DeferredStringArgument("/InvalidSequence");
+		arguments[0] = new DeferredArgument<String>("/InvalidSequence");
 
 		sequenceGenerator.evaluate(arguments);
 	}
@@ -99,12 +97,12 @@ public class HLSequenceGeneratorTest {
 
 		expectedException.expectMessage("oops! low value cannot be null");
 		DeferredObject[] arguments = new DeferredObject[2];
-		arguments[0] = new DeferredStringArgument("validSequence");
-		arguments[1] = new DeferredIntArgument(null);
+		arguments[0] = new DeferredArgument<String>("validSequence");
+		arguments[1] = new DeferredArgument<IntWritable>(null);
 
 		sequenceGenerator.evaluate(arguments);
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionIfLowValueIsNotInt() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
@@ -113,7 +111,7 @@ public class HLSequenceGeneratorTest {
 		ObjectInspector[] objectInspector = new ObjectInspector[2];
 		objectInspector[0] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
 		objectInspector[1] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
-		
+
 		sequenceGenerator.initialize(objectInspector);
 	}
 
@@ -123,8 +121,8 @@ public class HLSequenceGeneratorTest {
 		expectedException.expectMessage("oops! low value should be greater than 0");
 
 		DeferredObject[] arguments = new DeferredObject[2];
-		arguments[0] = new DeferredStringArgument("validSequence");
-		arguments[1] = new DeferredIntArgument(new IntWritable(0));
+		arguments[0] = new DeferredArgument<String>("validSequence");
+		arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(0));
 
 		sequenceGenerator.evaluate(arguments);
 	}
@@ -135,25 +133,25 @@ public class HLSequenceGeneratorTest {
 		expectedException.expectMessage("oops! low value should be greater than 0");
 
 		DeferredObject[] arguments = new DeferredObject[2];
-		arguments[0] = new DeferredStringArgument("validSequence");
-		arguments[1] = new DeferredIntArgument(new IntWritable(-1));
+		arguments[0] = new DeferredArgument<String>("validSequence");
+		arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(-1));
 
 		sequenceGenerator.evaluate(arguments);
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionIfSeedValueIsNull() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
 
 		expectedException.expectMessage("oops! seed value cannot be null");
 		DeferredObject[] arguments = new DeferredObject[3];
-		arguments[0] = new DeferredStringArgument("validSequence");
-		arguments[1] = new DeferredIntArgument(new IntWritable(1));
-		arguments[2] = new DeferredLongArgument(null);
-		
+		arguments[0] = new DeferredArgument<String>("validSequence");
+		arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(1));
+		arguments[2] = new DeferredArgument<LongWritable>(null);
+
 		sequenceGenerator.evaluate(arguments);
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionIfSeedValueIsNotInt() throws Exception {
 		expectedException.expect(UDFArgumentException.class);
@@ -163,7 +161,7 @@ public class HLSequenceGeneratorTest {
 		objectInspector[0] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
 		objectInspector[1] = PrimitiveObjectInspectorFactory.javaIntObjectInspector;
 		objectInspector[2] = PrimitiveObjectInspectorFactory.javaStringObjectInspector;
-		
+
 		sequenceGenerator.initialize(objectInspector);
 	}
 
@@ -173,10 +171,10 @@ public class HLSequenceGeneratorTest {
 		expectedException.expectMessage("oops! seed value can't be negative");
 
 		DeferredObject[] arguments = new DeferredObject[3];
-		arguments[0] = new DeferredStringArgument("validSequence");
-		arguments[1] = new DeferredIntArgument(new IntWritable(1));
-		arguments[2] = new DeferredLongArgument(new LongWritable(-1L));
-		
+		arguments[0] = new DeferredArgument<String>("validSequence");
+		arguments[1] = new DeferredArgument<IntWritable>(new IntWritable(1));
+		arguments[2] = new DeferredArgument<LongWritable>(new LongWritable(-1L));
+
 		sequenceGenerator.evaluate(arguments);
 	}
 
