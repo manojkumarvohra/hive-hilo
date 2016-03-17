@@ -25,7 +25,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 	private static final String SEED_SUFFIX = ".seed";
 	private static final int DEFAULT_LOW_VALUE = 200;
 
-	private static String zooKeeperSequenceRoot = null;
+	private static String zooKeeperSequenceRoot = "/sequences/hl/";
 	private static String zookeeperAddress = null;
 	private static Properties udfProperties = null;
 	private HLSequenceState sequenceState = null;
@@ -72,7 +72,6 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		try {
 			udfProperties.load(HLSequenceGenerator.class.getResourceAsStream("/UDFProperties.properties"));
 			zookeeperAddress = udfProperties.getProperty("zookeeperaddress");
-			zooKeeperSequenceRoot = udfProperties.getProperty("zookeeper_sequence_root");
 		} catch (IOException ex) {
 			String errorMessage = "Unable to load UDF properties." + ex.getMessage();
 			logger.error(errorMessage);
