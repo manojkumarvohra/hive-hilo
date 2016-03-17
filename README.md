@@ -28,7 +28,7 @@ Usage
 *FunctionName(<String> sequenceName, <int> lowvalue[optional], <long> seedvalue[optional])*
 
 - checkout the repository
-- change the properties like zookeeper address, zookeeper root, seed value, low values in the src/main/resources/UDFproperties.properties
+- change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
 - make the package
 - add the jar (without dependencies) to hive
 - create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceGenerator'
