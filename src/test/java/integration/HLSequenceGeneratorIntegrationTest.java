@@ -45,8 +45,12 @@ public class HLSequenceGeneratorIntegrationTest {
 		List<Long> expectedCounters = new ArrayList<Long>();
 		
 		CountDownLatch countDownLatch = new CountDownLatch(2);
-		new Thread(new Evaluation(sequenceGeneratorForJVM1, counters, countDownLatch)).start();
-		new Thread(new Evaluation(sequenceGeneratorForJVM2, counters, countDownLatch)).start();
+		Thread tJVM1 = new Thread(new Evaluation(sequenceGeneratorForJVM1, counters, countDownLatch));
+		Thread tJVM2 = new Thread(new Evaluation(sequenceGeneratorForJVM2, counters, countDownLatch));
+		
+		tJVM1.start();
+		tJVM1.join();
+		tJVM2.start();
 		
 		countDownLatch.await();
 		
