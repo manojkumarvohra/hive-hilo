@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.bigdata.curator.HLSequenceIncrementer;
-import com.bigdata.hive.udf.HLSequenceState;
+import com.bigdata.hive.udf.impl.HLSequenceState;
+import com.bigdata.udf.util.HLSequenceIncrementer;
 
 public class HLSequenceStateTest {
 

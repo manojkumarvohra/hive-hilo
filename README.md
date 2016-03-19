@@ -1,4 +1,4 @@
-# HIVE HILO Sequence
+# HIVE HILO Sequence Generator
 The project supports an uno incrementing (incrementing by 1) sequence in hive utilizing hilo allocation alogorithm.
 
 -----------------
@@ -38,8 +38,8 @@ Usage
 	- set hive.mapjoin.optimized.hashtable=false; 
 - If sequence outputs same value for each row, this could be a caching issue bug:
     - set hive.cache.expr.evaluation = false
-        - If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
-            - select concat(seq_func("sequence_name"),'') , other part of query .......  
+    -- If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
+    --- select concat(seq_func("sequence_name"),'') , other part of query .......  
 - use the function in your select queries
     - Ex usage: select seq("modelIds", 300, 327L) from models;
  
@@ -50,3 +50,38 @@ Trade Offs
 - The UDF increments the HI values for every 200 iterations by default. This is to ensure that interactions with zookeeper are not done very frequently.
 - However this also means that worst case 199 low values per mapper JVM can be wasted if not used.
 - You can change these figures to achieve a tradeoff between performance and sequence values wastage.
+
+# HIVE HILO Sequence Cleaner
+The project supports a sequence cleaner function which would delete the zNode associated with hilo sequence created by sequence generator.
+
+-----------------
+High Level Design
+-----------------
+
+- A stateful UDF is created which is aimed at house keeping activities.
+- The UDF accepts the sequence name and deletes the zNode at the associated path in zookeeper.
+- This would avoid any manual interventions with zookeeper and any accidental deletions of unwanted nodes.
+- Post cleanup, any subsequent usage of sequence will seed its value from 0.
+	- However you can provide a particular seed value which is an optional parameter with sequence generator function.
+
+
+-----
+Usage
+-----
+* SELECT FunctionName(<String> sequenceName)*
+
+- checkout the repository
+- change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
+- make the package
+- add the jar (without dependencies) to hive
+- create a temporary/permanent function using the class 'com.bigdata.hive.udf.HLSequenceCleaner'
+- use the function in your select queries so that it only fetches single row:
+    - Ex usage: select delete_hl_seq("modelIds");
+ 
+--------
+Caution
+--------
+
+- The UDF deletes the zNode associated with sequence in zoo keeper. 
+	- Hence be careful that sequence is not being used by the generator function in any query.
+	- It is advisable that the clean up is performed by administrator in agreement with developers.  

@@ -1,4 +1,4 @@
-package com.bigdata.hive.udf;
+package com.bigdata.hive.udf.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,8 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
 import org.apache.log4j.Logger;
 
-import com.bigdata.curator.HLSequenceIncrementer;
+import com.bigdata.hive.udf.SequenceGenerator;
+import com.bigdata.udf.util.HLSequenceIncrementer;
 
 @UDFType(deterministic = false, stateful = true)
 public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator {
@@ -25,7 +26,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 	private static final String SEED_SUFFIX = ".seed";
 	private static final int DEFAULT_LOW_VALUE = 200;
 
-	private static String zooKeeperSequenceRoot = "/sequences/hl/";
+	protected static String zooKeeperSequenceRoot = "/sequences/hl/";
 	private static String zookeeperAddress = null;
 	private static Properties udfProperties = null;
 	private HLSequenceState sequenceState = null;
@@ -63,7 +64,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 
 		default:
 			throw new UDFArgumentLengthException(
-					"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional, <long> seedvalue[optional])");
+					"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional], <long> seedvalue[optional])");
 		}
 
 		udfProperties = new Properties();
@@ -113,7 +114,6 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 		return next();
 	}
 
-	@Override
 	public Long next() {
 		return hlNextImpl(sequenceNameParam, lowValueParam, seedValueParam);
 	}
@@ -154,7 +154,8 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 					}
 
 					HLSequenceIncrementer incrementer = new HLSequenceIncrementer(zookeeperAddress,
-							zooKeeperSequenceRoot + sequenceNamePath, startHIValue);
+							zooKeeperSequenceRoot + sequenceNamePath);
+					incrementer.createCounter(startHIValue);
 					sequenceState.setIncrementer(incrementer);
 				}
 			} catch (Exception e) {
@@ -259,7 +260,7 @@ public class HLSequenceGenerator extends GenericUDF implements SequenceGenerator
 
 	public void destroy() {
 		if (sequenceState != null) {
-			sequenceState.getIncrementer().removeSequenceCounters();
+			sequenceState.getIncrementer().removeSequencePath();
 		}
 	}
 }

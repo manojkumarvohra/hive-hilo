@@ -1,4 +1,4 @@
-package com.bigdata.curator;
+package com.bigdata.udf.util;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -18,25 +18,23 @@ public class HLSequenceIncrementer {
 	private DistributedAtomicLong jvmCounter;
 	private transient Logger logger = Logger.getLogger(this.getClass());
 
-	public HLSequenceIncrementer(String zkAddress, String counterPath, Long startHIValue) throws Exception {
+	public HLSequenceIncrementer(String zkAddress, String counterPath) throws Exception {
 		this.curator = CuratorFrameworkFactory.newClient(zkAddress, new RetryNTimes(5, 1000));
 		curator.start();
 		this.counterPath = counterPath;
-		createCounter(startHIValue);
 	}
 
-	private void createCounter(Long startHIValue) throws Exception {
+	public void createCounter(Long startHIValue) throws Exception {
 		int maximumRetryTimeInMillis = 1000;
 		int retryFrequencyInMillis = 100;
-		RetryPolicy rp = new RetryUntilElapsed(maximumRetryTimeInMillis,
-				retryFrequencyInMillis);
+		RetryPolicy rp = new RetryUntilElapsed(maximumRetryTimeInMillis, retryFrequencyInMillis);
 		RetryPolicy lockPromotionRetryPolicy = new ExponentialBackoffRetry(3, 3);
 		PromotedToLock promotedToLock = PromotedToLock.builder().lockPath("/lock").retryPolicy(lockPromotionRetryPolicy)
 				.build();
 
 		startHIValue = startHIValue != null ? startHIValue : -1;
 
-		if (notInitialised()) {
+		if (checkSequenceNotAvailable()) {
 			this.jvmCounter = new DistributedAtomicLong(this.curator, this.counterPath, rp, promotedToLock);
 			this.jvmCounter.initialize(startHIValue);
 		} else {
@@ -64,7 +62,7 @@ public class HLSequenceIncrementer {
 		return currentCounter;
 	}
 
-	public boolean notInitialised() throws Exception {
+	public boolean checkSequenceNotAvailable() throws Exception {
 		try {
 			return curator.checkExists().forPath(this.counterPath) == null;
 
@@ -74,7 +72,7 @@ public class HLSequenceIncrementer {
 		}
 	}
 
-	public void removeSequenceCounters() {
+	public void removeSequencePath() {
 
 		try {
 			curator.delete().forPath(this.counterPath);
@@ -83,4 +81,5 @@ public class HLSequenceIncrementer {
 		}
 
 	}
+
 }

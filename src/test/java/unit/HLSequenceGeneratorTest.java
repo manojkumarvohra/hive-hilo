@@ -10,13 +10,11 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.MockitoAnnotations;
 
-import com.bigdata.hive.udf.HLSequenceGenerator;
+import com.bigdata.hive.udf.impl.HLSequenceGenerator;
 
 import models.DeferredArgument;
 
@@ -26,12 +24,6 @@ public class HLSequenceGeneratorTest {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-
-	}
 
 	@Test
 	public void shouldGetCorrectDisplayString() throws Exception {
@@ -44,7 +36,7 @@ public class HLSequenceGeneratorTest {
 	public void shouldThrowExceptionForNoArgumentsPassed() throws Exception {
 		expectedException.expect(UDFArgumentLengthException.class);
 		expectedException.expectMessage(
-				"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional, <long> seedvalue[optional])");
+				"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional], <long> seedvalue[optional])");
 
 		sequenceGenerator.initialize(new ObjectInspector[0]);
 	}
@@ -53,7 +45,7 @@ public class HLSequenceGeneratorTest {
 	public void shouldThrowExceptionForMoreThan3ArgumentsPassed() throws Exception {
 		expectedException.expect(UDFArgumentLengthException.class);
 		expectedException.expectMessage(
-				"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional, <long> seedvalue[optional])");
+				"Invalid function usage: Correct Usage => FunctionName(<String> sequenceName, <int> lowvalue[optional], <long> seedvalue[optional])");
 
 		sequenceGenerator.initialize(new ObjectInspector[4]);
 	}

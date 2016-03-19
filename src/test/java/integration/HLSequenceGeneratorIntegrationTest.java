@@ -18,7 +18,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.junit.After;
 import org.junit.Test;
 
-import com.bigdata.hive.udf.HLSequenceGenerator;
+import com.bigdata.hive.udf.impl.HLSequenceGenerator;
 
 import models.DeferredArgument;
 
@@ -64,13 +64,6 @@ public class HLSequenceGeneratorIntegrationTest {
 		assertTrue(expectedCounters.containsAll(counters));
 	}
 
-	@After
-	public void tearDown() throws IOException {
-		sequenceGeneratorForJVM1.destroy();
-		sequenceGeneratorForJVM1.close();
-		sequenceGeneratorForJVM2.close();
-	}
-
 	static class Evaluation implements Runnable {
 
 		HLSequenceGenerator sequenceGenerator = null;
@@ -109,6 +102,13 @@ public class HLSequenceGeneratorIntegrationTest {
 
 		}
 
+	}
+	
+	@After
+	public void tearDown() throws IOException {
+		sequenceGeneratorForJVM1.destroy();
+		sequenceGeneratorForJVM1.close();
+		sequenceGeneratorForJVM2.close();
 	}
 
 }
