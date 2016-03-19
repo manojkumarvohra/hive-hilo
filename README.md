@@ -68,7 +68,7 @@ High Level Design
 -----
 Usage
 -----
-* SELECT FunctionName(<String> sequenceName)*
+*SELECT FunctionName(<String> sequenceName)*
 
 - checkout the repository
 - change the properties like zookeeper address, seed value, low values in the src/main/resources/UDFproperties.properties
