@@ -1,6 +1,6 @@
 package com.bigdata.hive.udf.impl;
 
-import com.bigdata.hive.udf.SequenceState;
+import com.bigdata.hive.udf.def.SequenceState;
 import com.bigdata.udf.util.HLSequenceIncrementer;
 
 public class HLSequenceState implements SequenceState {

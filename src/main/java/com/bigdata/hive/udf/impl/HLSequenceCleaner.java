@@ -13,7 +13,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
 import org.apache.log4j.Logger;
 
-import com.bigdata.hive.udf.SequenceCleaner;
+import com.bigdata.hive.udf.def.SequenceCleaner;
 import com.bigdata.udf.util.HLSequenceIncrementer;
 
 @UDFType(deterministic = false, stateful = true)
