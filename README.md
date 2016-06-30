@@ -21,6 +21,9 @@ High Level Design
 - Seed value will only be used if sequence is being used for first time i.e. no zookeeper node exists for sequence path.
 - If seed value is not provided the sequence will start from 0 if fresh or on the basis of last HI value if already used.
 - If LO value is not provided the sequence will use default value of 200.
+ 
+![Alt text](/design.png?raw=true "Optional Title")
+
 
 -----
 Usage
