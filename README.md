@@ -45,7 +45,7 @@ Usage
   -- If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
   -- select concat(seq_func("sequence_name"),'') , other part of query .......  
   
-- Use hive 3.x2.x, udf doesn't show caching issue with latest version of hive.
+- Use hive 2.x, udf doesn't show caching issue with latest version of hive.
 
 - use the function in your select queries
     - Ex usage: select seq("modelIds", 300, 327L) from models;
