@@ -20,7 +20,7 @@ High Level Design
 - 	- OR you can pass these as arguments while invoking function.
 - Seed value will only be used if sequence is being used for first time i.e. no zookeeper node exists for sequence path.
 - If seed value is not provided the sequence will start from 0 if fresh or on the basis of last HI value if already used.
-- If LO value is not provided the sequence will use default value of 200.
+- If LO value is not provided the sequence will use default value ofof 200.
  
 ![Alt text](/design.png?raw=true "Optional Title")
 
@@ -42,7 +42,8 @@ Usage
 - If sequence outputs same value for each row, this could be a caching issue bug:
     - set hive.cache.expr.evaluation = false
     -- If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
-    --- select concat(seq_func("sequence_name"),'') , other part of query .......  
+    -- Use hive 2.x, probably caching issue comes with older versions of hive.
+    --- select concat(seq_func("sequence_name"),'') , other part of query .......  
 - use the function in your select queries
     - Ex usage: select seq("modelIds", 300, 327L) from models;
  
