@@ -42,7 +42,9 @@ Usage
 - If sequence outputs same value for each row, this could be a caching issue bug:
     - set hive.cache.expr.evaluation = false
     -- If above doesn't solves the problem, concatenate sequence output with an empty zero length string. Hive will auto cast back the result to number.
+    
     -- Use hive 2.x, probably caching issue comes with older versions of hive.
+    
     --- select concat(seq_func("sequence_name"),'') , other part of query .......  
 - use the function in your select queries
     - Ex usage: select seq("modelIds", 300, 327L) from models;
